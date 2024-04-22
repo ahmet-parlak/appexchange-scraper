@@ -5,9 +5,14 @@ const {
   addDataToJSONFile,
   getKeysFromJSONFile,
 } = require("./helpers/extractJSON");
+const { extractExcel } = require("./helpers/extractExcel");
+const isExtractExcel =
+  process.env.EXTRACT_DATA_TO_EXCEL === "true" ? true : false;
 
 (async () => {
   await scrapeData();
+
+  if (isExtractExcel) await extractExcel();
 })();
 
 async function scrapeData() {
