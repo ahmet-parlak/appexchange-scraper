@@ -6,21 +6,34 @@ let fileName = process.env.OUTPUT_FILE_NAME ?? "data.json";
 
 if (!fileName.endsWith(".json")) fileName += ".json";
 
+const jsonFileDir = path.join(__dirname, `../output`);
 const jsonFilePath = path.join(__dirname, `../output/${fileName}`);
 
-/* Create/Read JSON File */
-if (fs.existsSync(jsonFilePath)) {
-  log(fileName + " found..");
-} else {
-  const dataJSON = JSON.stringify({}, null, 2);
-  fs.writeFile(jsonFilePath, dataJSON, (err) => {
-    if (err) {
-      console.error("Error occured:", err);
-      return;
-    }
-    log(fileName + " created..");
-  });
-}
+fs.stat(jsonFileDir, (err, stats) => {
+  if (!(err === null && stats.isDirectory())) {
+    fs.mkdir(jsonFileDir, (err) => {
+      if (err) {
+        console.error(
+          "An error occurred while creating the output directory",
+          err
+        );
+      }
+    });
+  }
+  /* Create/Read JSON File */
+  if (fs.existsSync(jsonFilePath)) {
+    log(fileName + " found..");
+  } else {
+    const dataJSON = JSON.stringify({}, null, 2);
+    fs.writeFile(jsonFilePath, dataJSON, (err) => {
+      if (err) {
+        console.error("Error occured:", err);
+        return;
+      }
+      log(fileName + " created..");
+    });
+  }
+});
 
 function addDataToJSONFile(key, value) {
   fs.readFile(jsonFilePath, "utf8", (err, data) => {
